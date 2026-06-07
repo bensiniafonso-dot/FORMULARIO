@@ -1,0 +1,8 @@
+Application : NH Liberdade - Formulaire
+Interface : Grand ecran
+Package Android : io.github.nhcollection_lisboa.formulario_pc
+
+URL mono-depot : https://VOTRE_USER_GITHUB.github.io/nh-liberdade-transfers/PC/formulario/
+URL repo dedie : https://VOTRE_USER_GITHUB.github.io/nh-liberdade-transfers/
+
+Keystore : PWABuilder â€” https://www.pwabuilder.com/

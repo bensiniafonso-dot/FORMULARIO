@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+
+<!--
+  Nhalabene — solution ERP transferts (NH Collection Lisboa Liberdade).
+  Auteur : Sigagomes Afonso.
+-->
+
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080d1a">
+<script>
+(function(){try{var m=localStorage.getItem('nhc-transfer-theme');if(m==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();
+</script>
+<title>Transfer — NH Collection Lisboa Liberdade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  CONFIGURAÇÃO — SÓ ALTERAR ESTA LINHA                           ║
+║  CONFIGURATION — MODIFIER SEULEMENT CETTE LIGNE                ║
+╠══════════════════════════════════════════════════════════════════╣
+║  Passo 1: No Google Apps Script, fazer Deploy                   ║
+║  Passo 2: Copiar o URL do deploy (termina em /exec)             ║
+║  Passo 3: Colar aqui em baixo, substituindo o texto entre ' '  ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
+<script>
+  // ▼▼▼ COLAR O URL AQUI — APENAS NESTA LINHA ▼▼▼
+  var API_URL = 'https://script.google.com/macros/s/AKfycbxvkJFzutfJIZkC2tXdroFawnha_vqQ9ubB0wYM7rflxWNrMIIdxoPIHcU-QqNdQgLT4A/exec';
+  // ▲▲▲ NÃO ALTERAR MAIS NADA ▲▲▲
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080d1a;--bg2:#0d1426;--bg3:#111b30;--surface:#1a2940;
+  --card:var(--bg2);--border:#1e2f4a;--border2:#243758;--border3:#2c4168;
+  --gold:#c9a53d;--gold-l:#e8cc80;
+  --gold-b:rgba(201,165,61,.3);--gold-d:rgba(201,165,61,.15);--gold-s:rgba(201,165,61,.08);--gold-g:rgba(201,165,61,.15);
+  --text:#f4f7fc;--tm:#c8d4e8;--ts:#8ea3be;--tl:#5c6f8c;--tin:rgba(232,238,248,.14);
+  --danger:#f43f5e;--success:#10b981;
+  --blue:#4da6ff;
+  --r:10px;--r-lg:14px;--r-xl:20px;
+  --ease:.18s cubic-bezier(.4,0,.2,1);
+  --font:'Geist',system-ui,sans-serif;
+  --font-display:'Instrument Serif',Georgia,serif;
+  --body-grad-1:rgba(201,165,61,.05);--body-grad-2:rgba(13,31,60,.35);
+  --topbar-sh:0 1px 8px rgba(0,0,0,.35);
+  --submit-a:#1a1505;--submit-b:#2a2008;
+  --focus-ring:rgba(201,165,61,.08);
+  --tel-drop-sh:0 12px 40px rgba(0,0,0,.6);
+}
+html[data-theme="light"]{
+  --bg:#f2efe8;--bg2:#ffffff;--bg3:#ebe6dc;--surface:#faf8f5;
+  --card:#ffffff;--border:#ddd8cf;--border2:#d0c9bc;--border3:#c4bba8;
+  --gold:#9a7d28;--gold-l:#b8942e;
+  --gold-b:rgba(154,125,40,.35);--gold-d:rgba(154,125,40,.18);--gold-s:rgba(154,125,40,.12);--gold-g:rgba(154,125,40,.18);
+  --text:#1a1a22;--tm:#3d4556;--ts:#5c6678;--tl:#8b95a8;--tin:rgba(26,26,34,.12);
+  --blue:#1d5fbf;
+  --body-grad-1:rgba(154,125,40,.1);--body-grad-2:rgba(200,180,130,.2);
+  --topbar-sh:0 1px 12px rgba(0,0,0,.07);
+  --submit-a:#6b5a1a;--submit-b:#9a7d28;
+  --focus-ring:rgba(154,125,40,.18);
+  --tel-drop-sh:0 12px 36px rgba(0,0,0,.12);
+}
+html,body{height:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-weight:400;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .25s var(--ease),color .2s var(--ease)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 45% at 50% 0%,var(--body-grad-1),transparent 55%),radial-gradient(ellipse at 80% 100%,var(--body-grad-2),transparent 45%);pointer-events:none;z-index:0}
+body>*{position:relative;z-index:1}
+.screen{display:none;min-height:100vh}
+.screen.on{display:flex;animation:scIn .5s cubic-bezier(.4,0,.2,1) both}
+@keyframes scIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ══ ÉCRAN LANGUE ══ */
+#sl{flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;text-align:center}
+.brand-ring{width:68px;height:68px;border:1.5px solid var(--gold);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:18px;position:relative}
+.brand-ring::before{content:'';position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(201,165,61,.15)}
+.brand-ring svg{width:30px;height:30px;fill:var(--gold)}
+.brand-name{font-family:var(--font-display);font-size:clamp(20px,5vw,30px);font-weight:400;letter-spacing:-.01em;color:var(--text)}
+.brand-city{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-top:5px}
+.sep{width:42px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:22px auto}
+.tagline{font-family:var(--font-display);font-style:italic;font-size:clamp(12px,3vw,15px);color:var(--tm);line-height:1.7;margin-bottom:26px;max-width:360px}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%;max-width:360px;margin-bottom:22px}
+.lang-btn{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);padding:16px;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;color:var(--text);transition:var(--ease);position:relative;overflow:hidden}
+.lang-btn::after{content:'';position:absolute;inset:0;background:var(--gold-g);opacity:0;transition:var(--ease)}
+.lang-btn:hover{border-color:var(--gold);transform:translateY(-2px)}.lang-btn:hover::after{opacity:1}
+.lang-flag{font-size:24px;flex-shrink:0}
+.lang-name{font-size:14px;font-weight:500;display:block}
+.lang-sub{font-size:10px;color:var(--tm)}
+.price-badge{background:var(--gold-s);border:1px solid var(--gold-b);border-radius:40px;padding:10px 22px;display:inline-flex;align-items:center;gap:12px;margin-bottom:18px;overflow:hidden;position:relative}
+.price-badge::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(201,165,61,.06),transparent);animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.price-num{font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--gold)}
+.lang-footer{font-size:10.5px;color:var(--tm);letter-spacing:.04em;line-height:1.7}
+
+/* Choix thème clair / sombre (🌙 ☀️) */
+.theme-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.theme-lbl{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ts)}
+.theme-seg{display:inline-flex;background:var(--bg2);border:1px solid var(--border2);border-radius:999px;padding:3px;gap:2px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.theme-btn{width:42px;height:36px;border:none;border-radius:999px;background:transparent;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;transition:var(--ease);color:var(--ts)}
+.theme-btn:hover{color:var(--gold)}
+.theme-btn.on{background:var(--gold-s);color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold-b)}
+.theme-seg-mini .theme-btn{width:36px;height:32px;font-size:16px}
+.topbar .theme-row{margin:0 8px 0 0;flex:0 0 auto}
+.topbar .theme-lbl{display:none}
+@media(max-width:380px){.topbar .theme-seg-mini .theme-btn{width:32px;height:30px;font-size:15px}}
+
+/* ══ FORMULAIRE ══ */
+#sf{flex-direction:column;align-items:stretch}
+.topbar{background:var(--bg2);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 14px 0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--topbar-sh);transition:background .25s var(--ease),border-color .25s var(--ease)}
+.topbar-brand{font-family:var(--font-display);font-size:clamp(13px,3.8vw,17px);font-weight:400;letter-spacing:-.01em;color:var(--text);flex:1;min-width:0;padding-right:10px;line-height:1.2}
+.topbar-brand em{color:var(--gold);font-style:italic}
+.back-btn{background:var(--gold-s);border:1px solid var(--gold-b);border-radius:7px;padding:6px 13px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tm);cursor:pointer;transition:var(--ease);font-family:var(--font);font-weight:600;display:flex;align-items:center;gap:6px}
+.back-btn:hover{border-color:var(--gold);color:var(--gold)}
+.form-scroll{flex:1;padding:22px 16px 60px;overflow-y:auto}
+.form-inner{max-width:600px;margin:0 auto}
+.form-head{text-align:center;margin-bottom:26px}
+.form-head h1{font-family:var(--font-display);font-size:clamp(22px,5vw,32px);font-weight:400;line-height:1.15;margin-bottom:6px;color:var(--text)}
+.form-head h1 em{color:var(--gold);font-style:italic}
+.form-head p{font-size:12px;color:var(--tm);letter-spacing:.02em;margin-top:2px}
+.gold-rule{width:36px;height:2px;background:var(--gold);margin:12px auto 14px;border-radius:1px}
+.price-inline{display:inline-flex;align-items:center;gap:8px;background:var(--gold-s);border:1px solid var(--gold-b);border-radius:30px;padding:6px 16px;font-size:12px;color:var(--text)}
+.price-inline strong{color:var(--gold);font-family:var(--font-display);font-size:16px;font-weight:400}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:20px 0 12px;display:flex;align-items:center;gap:10px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.row1{margin-bottom:12px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.lbl{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--tm);display:flex;align-items:center;gap:5px}
+.lbl .lico{font-size:13px;opacity:.85}
+.inp{background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-size:13px;font-family:var(--font);font-weight:400;color:var(--text);width:100%;transition:var(--ease);appearance:none;-webkit-appearance:none}
+.inp::placeholder{color:var(--tl)}
+.inp:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--focus-ring)}
+select.inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a53d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;cursor:pointer}
+html[data-theme="light"] select.inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a7d28' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")}
+select.inp option{background:var(--bg3);color:var(--text)}
+textarea.inp{resize:vertical;min-height:80px;line-height:1.65}
+.err{font-size:10.5px;color:var(--danger);display:none;margin-top:1px}
+.fg.bad .err{display:block}
+.fg.bad .inp{border-color:var(--danger)}
+.hint{font-size:10px;color:var(--tm);font-style:italic;margin-top:3px;line-height:1.55}
+.opt-tag{font-size:9px;background:rgba(201,165,61,.12);border:1px solid rgba(201,165,61,.2);border-radius:4px;padding:1px 6px;color:var(--ts);letter-spacing:.06em;text-transform:uppercase;margin-left:4px}
+
+/* Note OTA */
+.ota-note{background:rgba(201,165,61,.07);border:1px solid rgba(201,165,61,.18);border-radius:var(--r);padding:10px 13px;font-size:11px;color:var(--text);line-height:1.65;margin-top:6px}
+.ota-note strong{color:var(--gold-l)}
+.ota-note ul{padding-left:15px;margin-top:4px}
+.ota-note li{margin-bottom:2px}
+
+/* Note urgence / -24h (affichée selon la langue choisie) */
+.urgent-note{background:rgba(77,166,255,.08);border:1px solid rgba(77,166,255,.25);border-radius:var(--r);padding:11px 13px;font-size:11px;color:var(--blue);line-height:1.7;margin-top:12px}
+.urgent-note strong{color:var(--blue)}
+
+/* Sélecteur type transfert */
+.type-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
+.tt{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:12px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--ts);transition:var(--ease)}
+.tt:hover{border-color:var(--border3);color:var(--tm)}
+.tt.sel{background:var(--gold-s);border-color:var(--gold-b);color:var(--gold)}
+.tt-ico{font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center}
+.tt-ico svg{width:22px;height:22px;display:block;flex-shrink:0;color:inherit}
+.tt-lbl{font-size:9px;text-align:center;line-height:1.3}
+.type-err{font-size:10.5px;color:var(--danger);display:none;margin:-4px 0 10px}
+.type-err.show{display:block}
+
+/* Cartes conditionnelles */
+.cond{max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease,opacity .3s ease;pointer-events:none}
+.cond.open{max-height:900px;opacity:1;pointer-events:all}
+.cond-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);padding:16px;margin-bottom:14px}
+.cond-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-ttl::before{content:'';width:14px;height:1px;background:var(--gold)}
+
+/* Info destination */
+.dest-info{background:var(--gold-s);border:1px solid var(--gold-b);border-radius:var(--r);padding:9px 13px;font-size:11px;color:var(--tm);margin-top:4px;display:flex;align-items:center;gap:7px;line-height:1.5}
+.dest-info .ico{font-size:14px;flex-shrink:0}
+
+/* Note option alternative */
+.alt-note{background:rgba(77,166,255,.08);border:1px solid rgba(77,166,255,.25);border-radius:var(--r);padding:10px 13px;font-size:11px;color:var(--blue);line-height:1.65;margin-top:8px;opacity:.95}
+
+/* Bouton soumettre */
+.submit-wrap{margin-top:24px}
+.submit-btn{width:100%;padding:16px 24px;background:linear-gradient(135deg,var(--submit-a),var(--submit-b),var(--gold-g));border:1px solid var(--gold-b);border-radius:var(--r-xl);font-family:var(--font);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;cursor:pointer;transition:var(--ease),transform .2s,background .25s var(--ease);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 20px rgba(201,165,61,.12)}
+html[data-theme="light"] .submit-btn{box-shadow:0 4px 18px rgba(90,70,20,.15)}
+.submit-btn:hover{background:linear-gradient(135deg,var(--submit-b),#3a3010,rgba(201,165,61,.25));border-color:var(--gold);box-shadow:0 0 24px rgba(201,165,61,.15);transform:translateY(-1px)}
+html[data-theme="light"] .submit-btn:hover{background:linear-gradient(135deg,#8a7228,#a88632,rgba(154,125,40,.35))}
+.submit-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.submit-btn .sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite;display:none;flex-shrink:0}
+.submit-btn.loading .sp{display:block}.submit-btn.loading .btn-t{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.form-note{text-align:center;font-size:11px;color:var(--tm);margin-top:14px;line-height:1.8}
+.form-note a{color:var(--gold);text-decoration:none;opacity:.85}
+.form-note a:hover{opacity:1;text-decoration:underline}
+
+/* ══ SUCCÈS ══ */
+#ss{flex-direction:column;align-items:stretch}
+.ss-top{background:var(--bg2);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:center}
+.ss-top-brand{font-family:var(--font-display);font-size:15px;font-weight:400;letter-spacing:-.01em;color:var(--text)}
+.ss-top-brand em{color:var(--gold);font-style:italic}
+.ss-body{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 20px 52px;max-width:480px;margin:0 auto;width:100%}
+.ss-ring{width:94px;height:94px;border-radius:50%;border:1px solid rgba(201,165,61,.38);display:flex;align-items:center;justify-content:center;margin-bottom:28px;animation:rPop .7s cubic-bezier(.34,1.56,.64,1) both}
+.ss-ring svg{width:40px;height:40px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;animation:chk .65s .48s ease forwards}
+@keyframes rPop{from{transform:scale(.25);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes chk{to{stroke-dashoffset:0}}
+.ss-eyebrow{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;animation:fu .5s .3s ease both;opacity:0}
+.ss-title{font-family:var(--font-display);font-size:clamp(26px,7vw,40px);font-weight:400;line-height:1.1;margin-bottom:8px;color:var(--text);animation:fu .5s .38s ease both;opacity:0}
+.ss-sub{font-size:11px;color:var(--tm);letter-spacing:.1em;text-transform:uppercase;margin-bottom:24px;animation:fu .5s .44s ease both;opacity:0}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ss-ref{background:rgba(201,165,61,.07);border:1px solid rgba(201,165,61,.3);border-radius:var(--r-xl);padding:15px 30px;margin-bottom:24px;animation:fu .5s .5s ease both;opacity:0;width:100%;max-width:280px}
+.ss-ref-lbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(201,165,61,.55);margin-bottom:5px}
+.ss-ref-id{font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--gold);letter-spacing:.06em}
+.ss-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 22px;text-align:left;width:100%;margin-bottom:14px;animation:fu .5s .54s ease both;opacity:0}
+.ss-card.d2{animation-delay:.6s}
+.ss-card-ttl{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ss-card-ttl::before{content:'';width:14px;height:1px;background:var(--gold);flex-shrink:0}
+.ss-msg{font-size:14px;color:var(--text);line-height:1.85}
+.ss-msg strong{color:var(--text);font-weight:500}
+.step{display:flex;gap:13px;padding:9px 0;border-bottom:.5px solid var(--tin)}
+.step:last-child{border-bottom:none;padding-bottom:0}.step:first-child{padding-top:0}
+.step-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.step-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.step-desc{font-size:11px;color:var(--tm);line-height:1.55}
+.ss-footer{font-size:10.5px;color:var(--tm);line-height:1.8;margin:14px 0 20px;animation:fu .5s .7s ease both;opacity:0}
+.ss-newbtn{background:transparent;border:1px solid var(--border2);border-radius:var(--r-xl);padding:12px 36px;font-family:var(--font);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);cursor:pointer;transition:var(--ease);animation:fu .5s .76s ease both;opacity:0}
+.ss-newbtn:hover{border-color:var(--gold-b);color:var(--gold)}
+
+/* ══ PHONE PICKER ══ */
+.tel-wrap{position:relative;display:flex;gap:0}
+.tel-flag-btn{flex-shrink:0;background:var(--gold-s);border:1px solid var(--gold-b);border-right:none;border-radius:var(--r) 0 0 var(--r);padding:0 11px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:var(--ease);color:var(--tm);font-family:var(--font);font-size:13px;white-space:nowrap;height:46px}
+.tel-flag-btn:hover{background:rgba(201,165,61,.13);border-color:var(--gold);color:var(--gold)}
+.tel-flag-btn svg{opacity:.6;flex-shrink:0}
+.tel-inp{border-radius:0 var(--r) var(--r) 0!important;flex:1;min-width:0}
+.tel-drop{position:absolute;top:calc(100% + 5px);left:0;width:100%;max-width:320px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);z-index:200;box-shadow:var(--tel-drop-sh);overflow:hidden;animation:scIn .18s ease}
+.tel-search{width:100%;background:var(--bg3);border:none;border-bottom:1px solid var(--border2);padding:10px 14px;font-size:13px;color:var(--text);font-family:var(--font);outline:none}
+.tel-search::placeholder{color:var(--ts)}
+.tel-list{max-height:220px;overflow-y:auto;overscroll-behavior:contain}
+.tel-list::-webkit-scrollbar{width:4px}.tel-list::-webkit-scrollbar-track{background:transparent}.tel-list::-webkit-scrollbar-thumb{background:rgba(201,165,61,.2);border-radius:2px}
+.tel-opt{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:13px;color:var(--tm);transition:background .12s;border-bottom:1px solid var(--border)}
+.tel-opt:hover,.tel-opt.hl{background:rgba(201,165,61,.1);color:var(--text)}
+.tel-opt-flag{font-size:18px;flex-shrink:0;width:22px;text-align:center}
+.tel-opt-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tel-opt-code{font-size:11px;color:var(--gold);flex-shrink:0;font-weight:500}
+@media(max-width:480px){.row2{grid-template-columns:1fr}.type-grid{gap:5px}.tt-ico{font-size:18px}.tt-lbl{font-size:8.5px}.tel-drop{max-width:100%}}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NH Form">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     ÉCRAN 1 — SÉLECTION LANGUE
+══════════════════════════════════════════ -->
+<div id="sl" class="screen on">
+  <div class="brand-ring">
+    <svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.25 3.75 10.15 9 11.25C17.25 23.15 21 18.25 21 13V7L12 2z"/></svg>
+  </div>
+  <div class="brand-name">NH Collection Lisboa Liberdade</div>
+  <div class="brand-city">Lisboa · Portugal</div>
+  <div class="sep"></div>
+  <p class="tagline">Select your language · Choisissez votre langue<br>Escolha o seu idioma · Seleccione su idioma</p>
+  <div class="theme-row" id="theme-row-sl">
+    <span class="theme-lbl theme-lbl-txt">Aparência</span>
+    <div class="theme-seg" role="group" aria-label="Tema">
+      <button type="button" class="theme-btn on" data-set-theme="dark" title="Modo escuro (predefinido)" aria-label="Modo escuro (predefinido)" aria-pressed="true">🌙</button>
+      <button type="button" class="theme-btn" data-set-theme="light" title="Modo claro" aria-label="Modo claro" aria-pressed="false">☀️</button>
+    </div>
+  </div>
+  <div class="lang-grid">
+    <button class="lang-btn" onclick="goLang('PT')"><span class="lang-flag">🇵🇹</span><span><span class="lang-name">Português</span><span class="lang-sub">Portugal</span></span></button>
+    <button class="lang-btn" onclick="goLang('EN')"><span class="lang-flag">🇬🇧</span><span><span class="lang-name">English</span><span class="lang-sub">United Kingdom</span></span></button>
+    <button class="lang-btn" onclick="goLang('FR')"><span class="lang-flag">🇫🇷</span><span><span class="lang-name">Français</span><span class="lang-sub">France</span></span></button>
+    <button class="lang-btn" onclick="goLang('ES')"><span class="lang-flag">🇪🇸</span><span><span class="lang-name">Español</span><span class="lang-sub">España</span></span></button>
+  </div>
+  <div class="price-badge"><span>🚗</span><span id="sl-price-txt" style="font-size:11px;color:var(--tm)">Transferes a partir de</span><span class="price-num">30 €</span></div>
+  <div class="lang-footer">NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa<br>Solution Nhalabene</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ÉCRAN 2 — FORMULAIRE
+══════════════════════════════════════════ -->
+<div id="sf" class="screen">
+  <div class="topbar">
+    <div class="topbar-brand">NH Collection <em>Lisboa</em> Liberdade</div>
+    <div class="theme-row">
+      <div class="theme-seg theme-seg-mini" role="group" aria-label="Tema">
+        <button type="button" class="theme-btn on" data-set-theme="dark" title="Modo escuro (predefinido)" aria-label="Modo escuro (predefinido)" aria-pressed="true">🌙</button>
+        <button type="button" class="theme-btn" data-set-theme="light" title="Modo claro" aria-label="Modo claro" aria-pressed="false">☀️</button>
+      </div>
+    </div>
+    <button class="back-btn" onclick="goBack()"><span id="bk-flag">🇵🇹</span><span id="bk-code">PT</span></button>
+  </div>
+  <div class="form-scroll">
+    <div class="form-inner">
+
+      <div class="form-head">
+        <h1 id="f-title">Reserva de Transfer</h1>
+        <p>NH Collection Lisboa Liberdade · Lisboa</p>
+        <div class="gold-rule"></div>
+        <div class="price-inline"><span>🚗</span><span id="f-price-tag">Transferes a partir de <strong>30 €</strong></span></div>
+        <div class="urgent-note" id="urgent-note"></div>
+      </div>
+
+      <!-- IDENTIFICAÇÃO -->
+      <div class="sec-lbl" id="sec-ident">Identificação</div>
+      <div class="row2">
+        <div class="fg" id="fg-nom"><div class="lbl"><span class="lico">👤</span><span id="l-nom">Nome Completo</span></div><input class="inp" id="v-nom" type="text" autocomplete="name"><div class="err" id="e-nom"></div></div>
+        <div class="fg" id="fg-tel">
+          <div class="lbl"><span class="lico">📞</span><span id="l-tel">Telemóvel</span></div>
+          <div class="tel-wrap" id="tel-wrap">
+            <button type="button" class="tel-flag-btn" id="tel-flag-btn" onclick="toggleDialDrop()" aria-label="Indicativo do país">
+              <span id="tel-flag-ico">🇵🇹</span>
+              <span id="tel-dial-lbl">+351</span>
+              <svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </button>
+            <input class="inp tel-inp" id="v-tel" type="tel" autocomplete="tel" placeholder="912345678" oninput="onTelInput(this)">
+            <div class="tel-drop" id="tel-drop" style="display:none">
+              <input type="text" class="tel-search" id="tel-search" placeholder="🔍 Pesquisar país / Search country…" oninput="filterDials(this.value)" autocomplete="off">
+              <div class="tel-list" id="tel-list"></div>
+            </div>
+          </div>
+          <div class="err" id="e-tel"></div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="fg" id="fg-email"><div class="lbl"><span class="lico">📧</span><span id="l-email">Email</span></div><input class="inp" id="v-email" type="email" autocomplete="email"><div class="err" id="e-email"></div></div>
+        <div class="fg" id="fg-pax"><div class="lbl"><span class="lico">👥</span><span id="l-pax">Pessoas</span></div>
+          <select class="inp" id="v-pax"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9+</option></select>
+          <div class="err" id="e-pax"></div></div>
+      </div>
+      <div class="row2">
+        <div class="fg" id="fg-bag"><div class="lbl"><span class="lico">🧳</span><span id="l-bag">Bagagens</span></div>
+          <select class="inp" id="v-bag"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6+</option></select>
+          <div class="err" id="e-bag"></div>
+        </div>
+        <div class="fg" id="fg-ota">
+          <div class="lbl"><span class="lico">🏨</span><span id="l-ota">Nº Confirmação Hotel</span></div>
+          <input class="inp" id="v-ota" type="text" id="ph-ota">
+          <div class="ota-note" id="ota-note"></div>
+        </div>
+      </div>
+
+      <!-- TRANSFER -->
+      <div class="sec-lbl" id="sec-transfer">Transfer</div>
+      <div class="lbl" id="l-type-lbl" style="margin-bottom:10px">Tipo de Partida</div>
+      <div class="type-grid">
+        <button type="button" class="tt" id="tt-airport"   onclick="setType('airport',this)"><span class="tt-ico">✈️</span><span class="tt-lbl" id="tt-air">Aeroporto</span></button>
+        <button type="button" class="tt" id="tt-hotel"     onclick="setType('hotel',this)"><span class="tt-ico">🏨</span><span class="tt-lbl" id="tt-hot">Hotel</span></button>
+        <button type="button" class="tt" id="tt-highspeed" onclick="setType('highspeed',this)"><span class="tt-ico">🚄</span><span class="tt-lbl" id="tt-hs">Alta Vel.</span></button>
+        <button type="button" class="tt" id="tt-train"     onclick="setType('train',this)"><span class="tt-ico">🚂</span><span class="tt-lbl" id="tt-trn">Comboio</span></button>
+        <button type="button" class="tt" id="tt-bus"       onclick="setType('bus',this)" title="Autocarro"><span class="tt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M4 16c0 .88.39 1.67 1 2.22V20a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h8v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V9h12v2z"/></svg></span><span class="tt-lbl" id="tt-bus">Autocarro</span></button>
+      </div>
+      <div class="type-err" id="type-err"></div>
+
+      <!-- ═ COND AEROPORTO ═ -->
+      <div class="cond" id="cond-air">
+        <div class="cond-card">
+          <div class="cond-ttl" id="cond-air-ttl">✈️ Informações do Voo</div>
+          <div class="row2">
+            <div class="fg" id="fg-vol"><div class="lbl"><span id="l-vol">Nº de Voo</span></div><input class="inp" id="v-vol" type="text" placeholder="TP234, FR9418…"><div class="err" id="e-vol"></div></div>
+            <div class="fg" id="fg-arr"><div class="lbl"><span id="l-arr">Data e Hora de Chegada</span></div><input class="inp" id="v-arr" type="datetime-local"><div class="hint" id="h-arr">Formato 24h</div><div class="err" id="e-arr"></div></div>
+          </div>
+          <!-- Destination depuis aéroport -->
+          <div class="row1">
+            <div class="fg"><div class="lbl"><span id="l-dest-air">Destino</span></div>
+              <select class="inp" id="v-dest-air" onchange="toggleAddrAirDest()">
+                <option value="NH Collection Lisboa Liberdade">🏨 NH Collection Lisboa Liberdade (recomendado)</option>
+                <option value="outro_air" id="opt-outro-air">📍 Outro destino em Lisboa</option>
+              </select>
+              <div class="dest-info"><span class="ico">💡</span><span id="dest-air-hint">Destino pré-selecionado: NH Collection Lisboa Liberdade</span></div>
+            </div>
+          </div>
+          <!-- Adresse optionnelle destination -->
+          <div class="row1" style="margin-top:8px">
+            <div class="fg"><div class="lbl"><span id="l-addr-air-dest">Morada de Destino</span> <span class="opt-tag" id="opt-1">opcional</span></div><input class="inp" id="v-addr-air-dest" type="text" placeholder="Rua, Nº, Bairro, Lisboa…"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═ COND HOTEL (départ hôtel) ═ -->
+      <div class="cond" id="cond-hotel">
+        <div class="cond-card">
+          <div class="cond-ttl" id="cond-hotel-ttl">🏨 Informações do Quarto</div>
+          <div class="row2">
+            <div class="fg" id="fg-room"><div class="lbl"><span id="l-room">Nº Quarto</span></div><input class="inp" id="v-room" type="text" placeholder="205, Suite A…"><div class="err" id="e-room"></div></div>
+            <div class="fg" id="fg-dep"><div class="lbl"><span id="l-dep">Data e Hora de Saída</span></div><input class="inp" id="v-dep" type="datetime-local"><div class="hint" id="h-dep">2h+ antes do voo recomendado</div><div class="err" id="e-dep"></div></div>
+          </div>
+          <!-- Destination depuis hôtel -->
+          <div class="row1">
+            <div class="fg"><div class="lbl"><span id="l-dest-hotel">Destino</span></div>
+              <select class="inp" id="v-dest-hotel">
+                <optgroup id="og-air-h" label="✈️ Aeroporto">
+                  <option value="Lisbon Airport" selected>✈️ Lisbon Airport (Humberto Delgado)</option>
+                </optgroup>
+                <optgroup id="og-gare-h" label="🚄 Gares / Estações">
+                  <option value="Gare do Oriente">🚄 Gare do Oriente</option>
+                  <option value="Santa Apolónia">🚂 Santa Apolónia</option>
+                  <option value="Rossio">🚃 Rossio</option>
+                  <option value="Entrecampos">🚉 Entrecampos</option>
+                  <option value="Roma-Areeiro">🚉 Roma–Areeiro</option>
+                  <option value="Cais do Sodré">⛴️ Cais do Sodré</option>
+                </optgroup>
+                <optgroup id="og-bus-h" label="🚌 Terminaux Bus">
+                  <option value="Sete Rios Terminal">🚌 Sete Rios — Terminal</option>
+                  <option value="Campo Grande Terminal">🚌 Campo Grande</option>
+                  <option value="Oriente Terminal Rodoviário">🚌 Oriente — Terminal Rodoviário</option>
+                </optgroup>
+                <optgroup id="og-crz-h" label="🛳️ Cruzeiros">
+                  <option value="Terminal Cruzeiros Alcântara">🛳️ Terminal Alcântara</option>
+                  <option value="Terminal Santa Apolónia Cruzeiros">🛳️ Terminal Santa Apolónia</option>
+                </optgroup>
+                <optgroup id="og-out-h" label="📍 Outros destinos">
+                  <option value="Cascais">🌊 Cascais</option>
+                  <option value="Sintra">🏰 Sintra</option>
+                  <option value="Estoril">🎰 Estoril</option>
+                  <option value="Setúbal">⚓ Setúbal</option>
+                  <option value="Belém">📍 Belém</option>
+                  <option value="Parque das Nações">📍 Parque das Nações</option>
+                  <option value="Chiado / Baixa">📍 Chiado / Baixa</option>
+                  <option value="Alfama">📍 Alfama</option>
+                  <option value="Almada / Caparica">🏖️ Almada / Costa da Caparica</option>
+                </optgroup>
+              </select>
+              <div class="dest-info"><span class="ico">🏨</span><span id="hotel-dest-hint">Partida: NH Collection Lisboa Liberdade</span></div>
+            </div>
+          </div>
+          <!-- Adresse destination optionnelle -->
+          <div class="row1" style="margin-top:8px">
+            <div class="fg"><div class="lbl"><span id="l-addr-hotel-dest">Morada de Destino</span> <span class="opt-tag" id="opt-2">opcional</span></div><input class="inp" id="v-addr-hotel-dest" type="text" placeholder="Rua, Nº, Bairro…"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═ COND ESTAÇÃO / BUS ═ -->
+      <div class="cond" id="cond-station">
+        <div class="cond-card">
+          <div class="cond-ttl" id="cond-sta-ttl">📍 Estação / Terminal</div>
+          <div class="row2">
+            <div class="fg" id="fg-sta">
+              <div class="lbl"><span id="l-sta">Estação de Partida</span></div>
+              <select class="inp" id="v-sta">
+                <option value="">— Selecionar —</option>
+                <optgroup id="og-av" label="🚄 Alta Velocidade / Alfa Pendular">
+                  <option value="Gare do Oriente">🚄 Gare do Oriente</option>
+                  <option value="Santa Apolónia">🚂 Santa Apolónia</option>
+                </optgroup>
+                <optgroup id="og-cp" label="🚂 Comboio Regional / Suburbano">
+                  <option value="Rossio">🚃 Rossio</option>
+                  <option value="Entrecampos">🚉 Entrecampos</option>
+                  <option value="Roma-Areeiro">🚉 Roma–Areeiro</option>
+                  <option value="Cais do Sodré">⛴️ Cais do Sodré</option>
+                  <option value="Braço de Prata">🚂 Braço de Prata</option>
+                </optgroup>
+                <optgroup id="og-bus-s" label="🚌 Terminal Rodoviário">
+                  <option value="Sete Rios Terminal">🚌 Sete Rios — Terminal</option>
+                  <option value="Campo Grande Terminal">🚌 Campo Grande</option>
+                  <option value="Oriente Terminal Rodoviário">🚌 Oriente — Terminal Rodoviário</option>
+                  <option value="Marquês de Pombal">🚌 Marquês de Pombal</option>
+                </optgroup>
+                <optgroup id="og-ferry" label="🛳️ Ferry / Cruzeiros">
+                  <option value="Terminal Cruzeiros Alcântara">🛳️ Terminal Alcântara</option>
+                  <option value="Terminal Santa Apolónia Cruzeiros">🛳️ Terminal Santa Apolónia</option>
+                </optgroup>
+              </select>
+              <div class="err" id="e-sta"></div>
+            </div>
+            <div class="fg" id="fg-pick">
+              <div class="lbl"><span id="l-pick">Data e Hora de Chegada</span></div>
+              <input class="inp" id="v-pick" type="datetime-local">
+              <div class="hint" id="h-pick">Quando chega à estação / paragem</div>
+              <div class="err" id="e-pick"></div>
+            </div>
+          </div>
+          <!-- Numéro de transport (équivalent vol) -->
+          <div class="row2" style="margin-top:4px">
+            <div class="fg">
+              <div class="lbl"><span id="l-numtrans">Nº do Comboio / Autocarro</span> <span class="opt-tag" id="opt-3">opcional</span></div>
+              <input class="inp" id="v-numtrans" type="text" placeholder="IC712, AP204, Rede…">
+              <div class="hint" id="h-numtrans">Nº identificador do serviço (como nº de voo)</div>
+            </div>
+            <div class="fg">
+              <div class="lbl"><span id="l-dest-sta">Destino</span></div>
+              <select class="inp" id="v-dest-sta" onchange="toggleAddrStaDest()">
+                <option value="NH Collection Lisboa Liberdade">🏨 NH Collection Lisboa Liberdade (recomendado)</option>
+                <option value="outro_sta" id="opt-outro-sta">📍 Outro destino em Lisboa</option>
+              </select>
+              <div class="dest-info" style="margin-top:4px"><span class="ico">🏨</span><span id="sta-dest-hint">Destino sugerido: NH Collection Lisboa Liberdade</span></div>
+            </div>
+          </div>
+          <!-- Adresse optionnelle destination station -->
+          <div class="row1" style="margin-top:8px">
+            <div class="fg"><div class="lbl"><span id="l-addr-sta-dest">Morada de Destino</span> <span class="opt-tag" id="opt-4">opcional</span></div><input class="inp" id="v-addr-sta-dest" type="text" placeholder="Rua, Nº, Bairro…"></div>
+          </div>
+          <!-- Note option alternative -->
+          <div class="alt-note" id="alt-note" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <!-- COMMENTAIRES -->
+      <div class="sec-lbl" id="sec-extra">Extra</div>
+      <div class="row1">
+        <div class="fg"><div class="lbl"><span class="lico">💬</span><span id="l-com">Comentário</span></div>
+          <textarea class="inp" id="v-com" placeholder="Pedidos especiais, informações adicionais…"></textarea>
+        </div>
+      </div>
+
+      <div class="submit-wrap">
+        <button class="submit-btn" id="submit-btn" onclick="doSubmit()">
+          <div class="sp"></div><span class="btn-t" id="l-submit">Confirmar Reserva</span>
+        </button>
+        <p class="form-note">NH Collection Lisboa Liberdade</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ÉCRAN 3 — SUCESSO
+══════════════════════════════════════════ -->
+<div id="ss" class="screen">
+  <div class="ss-top"><div class="ss-top-brand">NH Collection <em>Lisboa</em> Liberdade</div></div>
+  <div class="ss-body">
+    <div class="ss-ring"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+    <div class="ss-eyebrow" id="s-eyebrow">Pedido recebido</div>
+    <h2 class="ss-title" id="s-title">Reserva<br>Enviada</h2>
+    <p class="ss-sub" id="s-sub">NH Collection Lisboa Liberdade · Lisboa</p>
+    <div class="ss-ref"><div class="ss-ref-lbl" id="s-ref-lbl">Referência</div><div class="ss-ref-id" id="s-ref">NHC-000000</div></div>
+    <div class="ss-card">
+      <div class="ss-card-ttl" id="s-card-ttl">Mensagem do hotel</div>
+      <div class="ss-msg" id="s-msg"></div>
+    </div>
+    <div class="ss-card d2">
+      <div class="ss-card-ttl" id="s-steps-ttl">Próximos passos</div>
+      <div class="step"><div class="step-ico">📧</div><div><div class="step-name" id="s-st1n">Email de confirmação</div><div class="step-desc" id="s-st1d">Um email de confirmação será enviado</div></div></div>
+
+    </div>
+    <div class="ss-footer" id="s-footer">NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa · Nhalabene</div>
+    <button class="ss-newbtn" id="s-newbtn" onclick="resetTudo()">+ Nova Reserva</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ─────────────────────────────────────────────────────────────
+// TRADUÇÕES PT / EN / FR / ES
+// ─────────────────────────────────────────────────────────────
+const T = {
+  PT:{flag:'🇵🇹',code:'PT',priceTag:'Transferes a partir de',themeLbl:'Aparência',themeDark:'Modo escuro (predefinido)',themeLight:'Modo claro',themeGrp:'Escolher tema: escuro ou claro',fTitle:'Reserva de Transfer',urgentNote:'Em caso de dificuldade com a reserva ou se faltarem menos de 24 horas para a sua estadia ou partida, por favor, contacte a receção 24h/24 através do telefone +351 21 351 4060 ou do e-mail nhcollectionliberdade@nh-hotels.com.',sIdent:'Identificação',sTransfer:'Transfer',sExtra:'Informação Adicional',lNom:'Nome Completo',lTel:'Telemóvel',lEmail:'Email',lPax:'Pessoas',lBag:'Bagagens',lOta:'Nº Confirmação Hotel / OTA',phOta:'BKG-88392, 4456789…',otaNote:'<strong>É o número de confirmação</strong> recebido ao reservar:<ul><li><strong>Booking.com</strong> → "Número de confirmação"</li><li><strong>Expedia</strong> → "Itinerary number"</li><li><strong>Diretamente no hotel</strong> → número de reserva</li></ul>Exemplo: <strong>BKG-88392</strong> ou <strong>4456789</strong>',lTypeLbl:'Tipo de Partida',ttAir:'Aeroporto',ttHot:'Hotel',ttHs:'Alta Vel.',ttTrn:'Comboio',ttBus:'Autocarro',condAir:'✈️ Informações do Voo',condHotel:'🏨 Informações do Quarto',condSta:'📍 Estação / Terminal',lVol:'Nº de Voo',lArr:'Data e Hora de Chegada',hArr:'Formato 24h · Mínimo 24h de antecedência',lRoom:'Nº Quarto',lDep:'Data e Hora de Saída',hDep:'2h+ antes do voo · Mínimo 24h de antecedência',lSta:'Estação de Partida',lPick:'Data e Hora de Chegada',hPick:'Formato 24h · Mínimo 24h de antecedência',lNumtrans:'Nº do Comboio / Autocarro',hNumtrans:'Nº identificador do serviço (como nº de voo)',lDestAir:'Destino',lDestHotel:'Destino',lDestSta:'Destino',destAirHint:'Destino pré-selecionado: NH Collection Lisboa Liberdade',hotelDestHint:'Partida: NH Collection Lisboa Liberdade',staDestHint:'Destino sugerido: NH Collection Lisboa Liberdade',lAddrAirDest:'Morada de Destino',lAddrHotelDest:'Morada de Destino',lAddrStaDest:'Morada de Destino',optTag:'opcional',lCom:'Comentário',phCom:'Pedidos especiais, informações adicionais…',optOutro:'📍 Outro destino em Lisboa',ogAirH:'✈️ Aeroporto',ogGareH:'🚄 Gares / Estações',ogBusH:'🚌 Terminaux Bus',ogCrzH:'🛳️ Cruzeiros',ogOutH:'📍 Outros destinos',ogAv:'🚄 Alta Velocidade / Alfa Pendular',ogCp:'🚂 Comboio Regional / Suburbano',ogBusS:'🚌 Terminal Rodoviário',ogFerry:'🛳️ Ferry / Cruzeiros',altNote:'💡 Também é possível fazer transferes entre diferentes pontos (sem passar pelo hotel). Indique nos comentários ou contacte-nos. ⏰ As reservas devem ser feitas com pelo menos <strong>24 horas de antecedência</strong>.',submit:'Confirmar Reserva',submitting:'A enviar…',eReq:'Campo obrigatório',eEmail:'Email inválido',eTel:'Telefone inválido',eType:'Selecione o tipo de partida',eSta:'Selecione a estação / terminal',e24h:'Mínimo 24 horas de antecedência necessárias',sEyebrow:'Pedido recebido',sTitle:'Reserva<br>Enviada',sSub:'NH Collection Lisboa Liberdade · Lisboa',sRefLbl:'Referência',sCardTtl:'Mensagem do hotel',sMsg:'Obrigado por ter feito uma reserva de transfer! ✅<br>A sua reserva será verificada e responderemos <strong>o mais brevemente possível</strong>.',sStepsTtl:'Próximos passos',sSt1n:'Email de confirmação',sSt1d:'Um email de confirmação será enviado',sFooter:'NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa',sNewbtn:'+ Nova Reserva'},
+  EN:{flag:'🇬🇧',code:'EN',priceTag:'Transfers from',themeLbl:'Appearance',themeDark:'Dark mode (default)',themeLight:'Light mode',themeGrp:'Choose display: dark or light',fTitle:'Transfer Booking',urgentNote:'If you have any difficulty making the reservation or if there are less than 24 hours until your stay or departure, please contact the reception desk, available 24/7 (+351 21 351 4060 // nhcollectionliberdade@nh-hotels.com).',sIdent:'Identification',sTransfer:'Transfer',sExtra:'Additional Information',lNom:'Full Name',lTel:'Phone',lEmail:'Email',lPax:'Passengers',lBag:'Bags',lOta:'Hotel / Booking Confirmation Number',phOta:'BKG-88392, 4456789…',otaNote:'<strong>This is your confirmation number</strong> received when booking:<ul><li><strong>Booking.com</strong> → "Confirmation number"</li><li><strong>Expedia</strong> → "Itinerary number"</li><li><strong>Direct hotel booking</strong> → reservation number</li></ul>Example: <strong>BKG-88392</strong> or <strong>4456789</strong>',lTypeLbl:'Departure Type',ttAir:'Airport',ttHot:'Hotel',ttHs:'High-Speed',ttTrn:'Train',ttBus:'Bus',condAir:'✈️ Flight Information',condHotel:'🏨 Room Information',condSta:'📍 Station / Terminal',lVol:'Flight Number',lArr:'Arrival Date & Time',hArr:'24h format · Minimum 24h in advance',lRoom:'Room Number',lDep:'Hotel Departure Date & Time',hDep:'2h+ before flight · Minimum 24h in advance',lSta:'Departure Station',lPick:'Arrival Date & Time',hPick:'24h format · Minimum 24h in advance',lNumtrans:'Train / Bus Number',hNumtrans:'Service identifier (like a flight number)',lDestAir:'Destination',lDestHotel:'Destination',lDestSta:'Destination',destAirHint:'Preset destination: NH Collection Lisboa Liberdade',hotelDestHint:'Departure: NH Collection Lisboa Liberdade',staDestHint:'Suggested destination: NH Collection Lisboa Liberdade',lAddrAirDest:'Destination Address',lAddrHotelDest:'Destination Address',lAddrStaDest:'Destination Address',optTag:'optional',lCom:'Comment',phCom:'Special requests, additional information…',optOutro:'📍 Other destination in Lisbon',ogAirH:'✈️ Airport',ogGareH:'🚄 Train Stations',ogBusH:'🚌 Bus Terminals',ogCrzH:'🛳️ Cruise Terminals',ogOutH:'📍 Other destinations',ogAv:'🚄 High Speed / Alfa Pendular',ogCp:'🚂 Regional / Suburban Train',ogBusS:'🚌 Bus Terminal',ogFerry:'🛳️ Ferry / Cruise',altNote:'💡 Transfers between different points (not via the hotel) are also possible. Please mention it in the comments or contact us directly. ⏰ Bookings must be made at least <strong>24 hours in advance</strong>.',submit:'Confirm Booking',submitting:'Sending…',eReq:'Required field',eEmail:'Invalid email',eTel:'Invalid phone',eType:'Please select your departure type',eSta:'Please select a station / terminal',e24h:'Minimum 24 hours in advance required',sEyebrow:'Request received',sTitle:'Booking<br>Submitted',sSub:'NH Collection Lisboa Liberdade · Lisbon',sRefLbl:'Booking reference',sCardTtl:'Hotel message',sMsg:'Thank you for booking a transfer! ✅<br>Your booking will be verified and we will get back to you <strong>as soon as possible</strong>.',sStepsTtl:'Next steps',sSt1n:'Email de confirmação',sSt1d:'Um email de confirmação será enviado',sFooter:'NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa, Lisbon',sNewbtn:'+ New Booking'},
+  FR:{flag:'🇫🇷',code:'FR',priceTag:'Transferts à partir de',themeLbl:'Affichage',themeDark:'Mode sombre (défaut)',themeLight:'Mode clair',themeGrp:'Choisir le thème : sombre ou clair',fTitle:'Réservation Transfer',urgentNote:'En cas de difficulté pour effectuer la réservation ou s’il reste moins de 24 heures pour votre séjour ou depart, veuillez contacter la réception, disponible 24h/24 (+351 21 351 4060 // nhcollectionliberdade@nh-hotels.com).',sIdent:'Identification',sTransfer:'Transfert',sExtra:'Informations Complémentaires',lNom:'Nom Complet',lTel:'Téléphone',lEmail:'Email',lPax:'Personnes',lBag:'Bagages',lOta:'N° Confirmation Hôtel / Réservation',phOta:'BKG-88392, 4456789…',otaNote:"<strong>Il s'agit du numéro de confirmation</strong> reçu lors de votre réservation :<ul><li><strong>Booking.com</strong> → \"Numéro de confirmation\"</li><li><strong>Expedia</strong> → \"Numéro d'itinéraire\"</li><li><strong>Réservation directe</strong> → numéro de réservation</li></ul>Exemple : <strong>BKG-88392</strong> ou <strong>4456789</strong>",lTypeLbl:'Type de départ',ttAir:'Aéroport',ttHot:'Hôtel',ttHs:'TGV / AVE',ttTrn:'Train',ttBus:'Bus',condAir:'✈️ Informations de Vol',condHotel:'🏨 Informations Chambre',condSta:'📍 Gare / Terminal',lVol:'N° de Vol',lArr:"Date et heure d'arrivée",hArr:'Format 24h · Minimum 24h à l\'avance',lRoom:'N° de Chambre',lDep:'Date et heure de départ',hDep:'2h+ avant le vol · Minimum 24h à l\'avance',lSta:'Gare de départ',lPick:"Date et heure d'arrivée",hPick:'Format 24h · Minimum 24h à l\'avance',lNumtrans:'N° Train / Bus',hNumtrans:'Identifiant du service (comme un n° de vol)',lDestAir:'Destination',lDestHotel:'Destination',lDestSta:'Destination',destAirHint:'Destination prédéfinie : NH Collection Lisboa Liberdade',hotelDestHint:'Départ : NH Collection Lisboa Liberdade',staDestHint:'Destination suggérée : NH Collection Lisboa Liberdade',lAddrAirDest:'Adresse de destination',lAddrHotelDest:'Adresse de destination',lAddrStaDest:'Adresse de destination',optTag:'optionnel',lCom:'Commentaire',phCom:'Demandes spéciales, informations complémentaires…',optOutro:'📍 Autre destination à Lisbonne',ogAirH:'✈️ Aéroport',ogGareH:'🚄 Gares',ogBusH:'🚌 Terminaux Bus',ogCrzH:'🛳️ Croisières',ogOutH:'📍 Autres destinations',ogAv:'🚄 Grande Vitesse / Alfa Pendular',ogCp:'🚂 Train Régional / Suburbain',ogBusS:'🚌 Terminal Routier',ogFerry:'🛳️ Ferry / Croisière',altNote:"💡 Les transferts entre différents points (sans passer par l'hôtel) sont également possibles. Indiquez-le dans les commentaires ou contactez-nous. ⏰ Les réservations doivent être effectuées au moins <strong>24 heures à l'avance</strong>.",submit:'Confirmer la Réservation',submitting:'Envoi en cours…',eReq:'Champ obligatoire',eEmail:'Email invalide',eTel:'Téléphone invalide',eType:'Veuillez sélectionner votre type de départ',eSta:'Veuillez sélectionner une gare / terminal',e24h:'Réservation requise au minimum 24h à l\'avance',sEyebrow:'Demande reçue',sTitle:'Réservation<br>Envoyée',sSub:'NH Collection Lisboa Liberdade · Lisbonne',sRefLbl:'Référence',sCardTtl:"Message de l'hôtel",sMsg:'Merci d\'avoir effectué une réservation de transfert ! ✅<br>Votre réservation será vérifiée et nous vous répondrons <strong>dans les plus brefs délais</strong>.',sStepsTtl:'Prochaines étapes',sSt1n:'Email de confirmação',sSt1d:'Um email de confirmação será enviado',sFooter:'NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa, Lisbonne',sNewbtn:'+ Nouvelle Réservation'},
+  ES:{flag:'🇪🇸',code:'ES',priceTag:'Traslados desde',themeLbl:'Apariencia',themeDark:'Modo oscuro (predeterminado)',themeLight:'Modo claro',themeGrp:'Elegir tema: oscuro o claro',fTitle:'Reserva de Traslado',urgentNote:'Si tiene dificultades con su reserva o faltan menos de 24 horas para su estancia o salida, por favor contacte con nuestra recepción 24/7 llamando al +351 21 351 4060 o enviando un correo electrónico a nhcollectionliberdade@nh-hotels.com.',sIdent:'Identificación',sTransfer:'Traslado',sExtra:'Información Adicional',lNom:'Nombre Completo',lTel:'Teléfono',lEmail:'Email',lPax:'Personas',lBag:'Maletas',lOta:'N° Confirmación Hotel / Reserva',phOta:'BKG-88392, 4456789…',otaNote:'<strong>Es el número de confirmación</strong> recibido al reservar:<ul><li><strong>Booking.com</strong> → "Número de confirmación"</li><li><strong>Expedia</strong> → "Número de itinerario"</li><li><strong>Reserva directa</strong> → número de reserva</li></ul>Ejemplo: <strong>BKG-88392</strong> o <strong>4456789</strong>',lTypeLbl:'Tipo de salida',ttAir:'Aeropuerto',ttHot:'Hotel',ttHs:'Alta Vel.',ttTrn:'Tren',ttBus:'Autobús',condAir:'✈️ Información del Vuelo',condHotel:'🏨 Información de Habitación',condSta:'📍 Estación / Terminal',lVol:'N° de Vuelo',lArr:'Fecha y hora de llegada',hArr:'Formato 24h · Mínimo 24h de antelación',lRoom:'N° de Habitación',lDep:'Fecha y hora de salida',hDep:'2h+ antes del vuelo · Mínimo 24h de antelación',lSta:'Estación de salida',lPick:'Fecha y hora de llegada',hPick:'Formato 24h · Mínimo 24h de antelación',lNumtrans:'N° Tren / Autobús',hNumtrans:'Identificador del servicio (como un n° de vuelo)',lDestAir:'Destino',lDestHotel:'Destino',lDestSta:'Destino',destAirHint:'Destino predefinido: NH Collection Lisboa Liberdade',hotelDestHint:'Salida: NH Collection Lisboa Liberdade',staDestHint:'Destino sugerido: NH Collection Lisboa Liberdade',lAddrAirDest:'Dirección de destino',lAddrHotelDest:'Dirección de destino',lAddrStaDest:'Dirección de destino',optTag:'opcional',lCom:'Comentario',phCom:'Solicitudes especiales, información adicional…',optOutro:'📍 Otro destino en Lisboa',ogAirH:'✈️ Aeropuerto',ogGareH:'🚄 Estaciones de Tren',ogBusH:'🚌 Terminales de Bus',ogCrzH:'🛳️ Cruceros',ogOutH:'📍 Otros destinos',ogAv:'🚄 Alta Velocidad / Alfa Pendular',ogCp:'🚂 Tren Regional / Suburbano',ogBusS:'🚌 Terminal de Autobuses',ogFerry:'🛳️ Ferry / Crucero',altNote:'💡 Los traslados entre diferentes puntos (sin pasar por el hotel) también son posibles. Indíquelo en los comentarios o contáctenos. ⏰ Las reservas deben realizarse con al menos <strong>24 horas de antelación</strong>.',submit:'Confirmar Reserva',submitting:'Enviando…',eReq:'Campo obligatorio',eEmail:'Email inválido',eTel:'Teléfono inválido',eType:'Por favor seleccione el tipo de salida',eSta:'Por favor seleccione una estación / terminal',e24h:'Se requiere reserva con al menos 24 horas de antelación',sEyebrow:'Solicitud recibida',sTitle:'Reserva<br>Enviada',sSub:'NH Collection Lisboa Liberdade · Lisboa',sRefLbl:'Referencia',sCardTtl:'Mensaje del hotel',sMsg:'¡Gracias por realizar una reserva de traslado! ✅<br>Su reserva será verificada y le responderemos <strong>a la mayor brevedad posible</strong>.',sStepsTtl:'Próximos pasos',sSt1n:'Email de confirmação',sSt1d:'Um email de confirmação será enviado',sFooter:'NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa',sNewbtn:'+ Nueva Reserva'}
+};
+
+// Estado
+let LANG = 'PT', TYPE = null;
+
+const THEME_KEY='nhc-transfer-theme';
+function getStoredTheme(){try{return localStorage.getItem(THEME_KEY)||'dark';}catch(e){return'dark';}}
+function setTheme(mode){
+  if(mode!=='dark'&&mode!=='light')mode='dark';
+  document.documentElement.setAttribute('data-theme',mode==='light'?'light':'dark');
+  try{localStorage.setItem(THEME_KEY,mode);}catch(e){}
+  const mc=document.querySelector('meta[name="theme-color"]');
+  if(mc)mc.setAttribute('content',mode==='light'?'#f2efe8':'#080d1a');
+  document.querySelectorAll('.theme-btn[data-set-theme="dark"]').forEach(b=>{
+    const on=mode==='dark';
+    b.classList.toggle('on',on);
+    b.setAttribute('aria-pressed',on?'true':'false');
+  });
+  document.querySelectorAll('.theme-btn[data-set-theme="light"]').forEach(b=>{
+    const on=mode==='light';
+    b.classList.toggle('on',on);
+    b.setAttribute('aria-pressed',on?'true':'false');
+  });
+}
+function applyThemeI18n(t){
+  if(!t)return;
+  document.querySelectorAll('.theme-lbl-txt').forEach(el=>{el.textContent=t.themeLbl;});
+  document.querySelectorAll('.theme-seg').forEach(el=>{el.setAttribute('aria-label',t.themeGrp);});
+  document.querySelectorAll('.theme-btn[data-set-theme="dark"]').forEach(b=>{b.title=t.themeDark;b.setAttribute('aria-label',t.themeDark);});
+  document.querySelectorAll('.theme-btn[data-set-theme="light"]').forEach(b=>{b.title=t.themeLight;b.setAttribute('aria-label',t.themeLight);});
+}
+function bindThemeButtons(){
+  document.querySelectorAll('.theme-btn').forEach(btn=>{
+    if(btn.dataset.bound)return;
+    btn.dataset.bound='1';
+    btn.addEventListener('click',function(){setTheme(this.getAttribute('data-set-theme'));});
+  });
+}
+
+// Navegação
+function goLang(lang){LANG=lang;applyLang(T[lang]);show('sf');window.scrollTo(0,0);}
+function goBack(){TYPE=null;show('sl');}
+function show(id){document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('on');s.style.display='none';});const el=document.getElementById(id);el.style.display='flex';requestAnimationFrame(()=>el.classList.add('on'));}
+
+// Aplicar traduções
+function applyLang(t){
+  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  const h=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  const p=(id,v)=>{const e=document.getElementById(id);if(e)e.placeholder=v;};
+  const og=(id,v)=>{const e=document.getElementById(id);if(e)e.label=v;};
+  s('sl-price-txt',t.priceTag);s('bk-flag',t.flag);s('bk-code',t.code);
+  s('f-title',t.fTitle);h('f-price-tag',t.priceTag+' <strong>30 €</strong>');s('urgent-note',t.urgentNote||'');
+  s('sec-ident',t.sIdent);s('sec-transfer',t.sTransfer);s('sec-extra',t.sExtra);
+  s('l-nom',t.lNom);s('l-tel',t.lTel);s('l-email',t.lEmail);s('l-pax',t.lPax);s('l-bag',t.lBag);
+  s('l-ota',t.lOta);p('v-ota',t.phOta);h('ota-note',t.otaNote);
+  s('l-type-lbl',t.lTypeLbl);
+  s('tt-air',t.ttAir);s('tt-hot',t.ttHot);s('tt-hs',t.ttHs);s('tt-trn',t.ttTrn);s('tt-bus',t.ttBus);
+  s('cond-air-ttl',t.condAir);s('cond-hotel-ttl',t.condHotel);s('cond-sta-ttl',t.condSta);
+  s('l-vol',t.lVol);s('l-arr',t.lArr);s('h-arr',t.hArr);
+  s('l-room',t.lRoom);s('l-dep',t.lDep);s('h-dep',t.hDep);
+  s('l-sta',t.lSta);s('l-pick',t.lPick);s('h-pick',t.hPick);
+  s('l-numtrans',t.lNumtrans);s('h-numtrans',t.hNumtrans);
+  s('l-dest-air',t.lDestAir);s('l-dest-hotel',t.lDestHotel);s('l-dest-sta',t.lDestSta);
+  s('dest-air-hint',t.destAirHint);s('hotel-dest-hint',t.hotelDestHint);s('sta-dest-hint',t.staDestHint);
+  s('l-addr-air-dest',t.lAddrAirDest);s('l-addr-hotel-dest',t.lAddrHotelDest);s('l-addr-sta-dest',t.lAddrStaDest);
+  ['opt-1','opt-2','opt-3','opt-4'].forEach(id=>s(id,t.optTag));
+  s('l-com',t.lCom);p('v-com',t.phCom);
+  s('l-submit',t.submit);
+  // OG labels
+  og('og-air-h',t.ogAirH);og('og-gare-h',t.ogGareH);og('og-bus-h',t.ogBusH);og('og-crz-h',t.ogCrzH);og('og-out-h',t.ogOutH);
+  og('og-av',t.ogAv);og('og-cp',t.ogCp);og('og-bus-s',t.ogBusS);og('og-ferry',t.ogFerry);
+  // Outro option
+  const oo=document.getElementById('opt-outro-air');if(oo)oo.textContent=t.optOutro;
+  const os=document.getElementById('opt-outro-sta');if(os)os.textContent=t.optOutro;
+  // Alt note
+  h('alt-note',t.altNote);
+  p('v-nom',t.lNom+'…');p('v-email','email@exemplo.com');
+  applyThemeI18n(t);
+  // Reset
+  document.querySelectorAll('.tt').forEach(b=>b.classList.remove('sel'));
+  ['cond-air','cond-hotel','cond-station'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  document.getElementById('type-err').classList.remove('show');
+  document.querySelectorAll('.fg').forEach(f=>f.classList.remove('bad'));
+  TYPE=null;
+}
+
+// Seleção tipo transfert
+function setType(type,btn){
+  TYPE=type;
+  document.querySelectorAll('.tt').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('type-err').classList.remove('show');
+  ['cond-air','cond-hotel','cond-station'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  if(type==='airport'){
+    document.getElementById('cond-air').classList.add('open');
+  }else if(type==='hotel'){
+    document.getElementById('cond-hotel').classList.add('open');
+  }else{
+    document.getElementById('cond-station').classList.add('open');
+    const sta=document.getElementById('v-sta');
+    if(type==='highspeed')sta.value='Gare do Oriente';
+    else if(type==='train')sta.value='Santa Apolónia';
+    else if(type==='bus')sta.value='Sete Rios Terminal';
+    else sta.value='';
+  }
+}
+
+function toggleAddrAirDest(){/* adresse toujours visible */}
+function toggleAddrStaDest(){/* adresse toujours visible */}
+
+// Validação
+function vF(fgId,inputId,errId,rule){
+  const val=(document.getElementById(inputId)?.value||'').trim();
+  const fg=document.getElementById(fgId),err=document.getElementById(errId);
+  const t=T[LANG];let msg='';
+  if(rule==='req'&&!val)msg=t.eReq;
+  else if(rule==='email'&&val&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val))msg=t.eEmail;
+  else if(rule==='tel'&&!val){msg=t.eReq;}
+  else if(rule==='tel'&&val){const full=getTelFull();if(!/^[\+\d][\d\s\-\(\)]{4,19}$/.test(full))msg=t.eTel;}
+  if(msg){fg?.classList.add('bad');if(err)err.textContent=msg;return false;}
+  fg?.classList.remove('bad');return true;
+}
+
+function check24h(fgId,inputId,errId){
+  const val=(document.getElementById(inputId)?.value||'').trim();
+  const fg=document.getElementById(fgId),err=document.getElementById(errId);
+  const t=T[LANG];
+  if(!val){fg?.classList.add('bad');if(err)err.textContent=t.eReq;return false;}
+  const chosen=new Date(val);const now=new Date();
+  const diff=(chosen-now)/(1000*60*60);
+  if(diff<24){
+    fg?.classList.add('bad');
+    if(err)err.textContent=t.e24h||'Minimum 24h in advance / Minimum 24h à l\'avance';
+    return false;
+  }
+  fg?.classList.remove('bad');return true;
+}
+function valider(){
+  const t=T[LANG];let ok=true;
+  ok=vF('fg-nom','v-nom','e-nom','req')&&ok;
+  ok=vF('fg-tel','v-tel','e-tel','tel')&&ok;
+  ok=vF('fg-email','v-email','e-email','req')&&ok;
+  ok=vF('fg-email','v-email','e-email','email')&&ok;
+  ok=vF('fg-pax','v-pax','e-pax','req')&&ok;
+  ok=vF('fg-bag','v-bag','e-bag','req')&&ok;
+  if(!TYPE){const te=document.getElementById('type-err');te.textContent=t.eType;te.classList.add('show');ok=false;}
+  if(TYPE==='airport'){ok=vF('fg-vol','v-vol','e-vol','req')&&ok;ok=check24h('fg-arr','v-arr','e-arr')&&ok;}
+  else if(TYPE==='hotel'){ok=vF('fg-room','v-room','e-room','req')&&ok;ok=check24h('fg-dep','v-dep','e-dep')&&ok;}
+  else if(TYPE){
+    const sta=(document.getElementById('v-sta')?.value||'').trim();
+    if(!sta){const e=document.getElementById('e-sta'),fg=document.getElementById('fg-sta');if(e)e.textContent=t.eSta;fg?.classList.add('bad');ok=false;}
+    else document.getElementById('fg-sta')?.classList.remove('bad');
+    ok=check24h('fg-pick','v-pick','e-pick')&&ok;
+  }
+  return ok;
+}
+
+// Getters
+function getDepart(){if(TYPE==='airport')return'Lisbon Airport';if(TYPE==='hotel')return'NH Collection Lisboa Liberdade';return document.getElementById('v-sta')?.value||'';}
+function getDest(){
+  if(TYPE==='airport'){const v=document.getElementById('v-dest-air')?.value;return(v==='outro_air')?'Outro destino em Lisboa':v||'NH Collection Lisboa Liberdade';}
+  if(TYPE==='hotel')return document.getElementById('v-dest-hotel')?.value||'Lisbon Airport';
+  const v=document.getElementById('v-dest-sta')?.value;return(v==='outro_sta')?'Outro destino em Lisboa':v||'NH Collection Lisboa Liberdade';
+}
+function getAddrDest(){
+  if(TYPE==='airport')return document.getElementById('v-addr-air-dest')?.value.trim()||'';
+  if(TYPE==='hotel')return document.getElementById('v-addr-hotel-dest')?.value.trim()||'';
+  return document.getElementById('v-addr-sta-dest')?.value.trim()||'';
+}
+function getDt(){
+  if(TYPE==='airport')return document.getElementById('v-arr')?.value||'';
+  if(TYPE==='hotel')return document.getElementById('v-dep')?.value||'';
+  return document.getElementById('v-pick')?.value||'';
+}
+
+// Submissão
+function doSubmit(){
+  if(!valider()){const fb=document.querySelector('.bad,.type-err.show');if(fb)fb.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  const t=T[LANG],btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');btn.disabled=true;
+  document.getElementById('l-submit').textContent=t.submitting;
+  const dt=getDt();let dateT='',heureT='';
+  if(dt){const d=new Date(dt);if(!isNaN(d.getTime())){dateT=d.toISOString().slice(0,10);heureT=d.toTimeString().slice(0,5);}}
+  const payload={
+    action:'soumettreReservation',langue:LANG,
+    nom:document.getElementById('v-nom').value.trim(),
+    numReservaOta:document.getElementById('v-ota').value.trim(),
+    telephone:getTelFull(),
+    email:document.getElementById('v-email').value.trim(),
+    personnes:document.getElementById('v-pax').value,
+    malas:document.getElementById('v-bag').value||'0',
+    origineType:TYPE,
+    pointDepart:getDepart(),
+    adresseDepart:'',
+    destination:getDest(),
+    adresseDestination:getAddrDest(),
+    dateTransfer:dateT,heureTransfer:heureT,
+    numVol:document.getElementById('v-vol')?.value.trim()||'',
+    numTransport:document.getElementById('v-numtrans')?.value.trim()||'',
+    numChambre:document.getElementById('v-room')?.value.trim()||'',
+    commentaires:document.getElementById('v-com').value.trim()
+  };
+  if(!API_URL||(API_URL==='VOTRE_URL_API_APPS_SCRIPT'||(API_URL&&API_URL.includes('VOTRE_DEPLOIEMENT_APPS_SCRIPT')))){onErreur({message:'API_URL não configurado. Consultar as instruções de instalação no topo do ficheiro HTML.'});return;}
+  const _timeout = new Promise((_,reject) =>
+    setTimeout(()=>reject(new Error('Temps dépassé (30s). Vérifier la connexion ou réessayer.')),30000)
+  );
+  Promise.race([
+    fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
+      .then(r=>{
+        if(!r.ok) throw new Error('Erreur serveur HTTP '+r.status);
+        return r.json();
+      }),
+    _timeout
+  ]).then(d=>onSucces(d,payload)).catch(e=>onErreur(e));
+}
+
+function onSucces(res,payload){
+  if(res&&!res.success){onErreur({message:res.error||'Erreur serveur'});return;}
+  const id=(res&&res.id)?res.id:genId();const t=T[LANG];
+  const s=(id2,v)=>{const e=document.getElementById(id2);if(e)e.textContent=v;};
+  const h=(id2,v)=>{const e=document.getElementById(id2);if(e)e.innerHTML=v;};
+  s('s-eyebrow',t.sEyebrow);h('s-title',t.sTitle);s('s-sub',t.sSub);
+  s('s-ref-lbl',t.sRefLbl);s('s-ref',id);
+  s('s-card-ttl',t.sCardTtl);h('s-msg',t.sMsg);
+  s('s-steps-ttl',t.sStepsTtl);
+  s('s-st1n',t.sSt1n);s('s-st1d',t.sSt1d);
+  h('s-footer',t.sFooter);s('s-newbtn',t.sNewbtn);
+  show('ss');window.scrollTo(0,0);
+}
+
+function onErreur(err){
+  const btn=document.getElementById('submit-btn');
+  btn.classList.remove('loading');btn.disabled=false;
+  document.getElementById('l-submit').textContent=T[LANG].submit;
+  // Message d'erreur lisible selon la langue
+  const msgs={
+    PT:'Erro ao enviar. Verifique a ligação e tente novamente.',
+    EN:'Sending failed. Please check your connection and try again.',
+    FR:'Échec de l\'envoi. Vérifiez votre connexion et réessayez.',
+    ES:'Error al enviar. Compruebe su conexión e inténtelo de nuevo.'
+  };
+  const detail = err?.message||'Erro desconhecido';
+  // Afficher dans la page (pas un alert brutal)
+  let errBox = document.getElementById('submit-err-box');
+  if(!errBox){
+    errBox = document.createElement('div');
+    errBox.id = 'submit-err-box';
+    errBox.style.cssText='margin-top:12px;padding:12px 14px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:10px;font-size:12px;color:#f87171;line-height:1.6;';
+    document.querySelector('.submit-wrap').appendChild(errBox);
+  }
+  errBox.innerHTML = (msgs[LANG]||msgs.FR) + '<br><span style="opacity:.6;font-size:10px">Détail : '+detail+'</span>';
+  errBox.style.display='block';
+  setTimeout(()=>{ if(errBox) errBox.style.display='none'; }, 10000);
+}
+
+function genId(){const d=new Date();return'NHC-'+String(d.getFullYear()).slice(-2)+String(d.getMonth()+1).padStart(2,'0')+'-'+Math.floor(Math.random()*90000+10000);}
+
+function resetTudo(){
+  TYPE=null;LANG='PT';
+  document.querySelectorAll('.inp').forEach(el=>el.value='');
+  document.querySelectorAll('.fg').forEach(f=>f.classList.remove('bad'));
+  document.querySelectorAll('.tt').forEach(b=>b.classList.remove('sel'));
+  ['cond-air','cond-hotel','cond-station'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  // Reset phone picker
+  setDial({flag:'🇵🇹',name:'Portugal',dial:'+351'});
+  show('sl');
+}
+
+// ─────────────────────────────────────────────────────────────
+// PHONE PICKER — indicativos com bandeiras
+// ─────────────────────────────────────────────────────────────
+// ══ LISTA COMPLETA DE PAÍSES DO MUNDO ══
+// Países prioritários aparecem primeiro (mais comuns para hóspedes do hotel)
+const DIALS_PRIORITY=[
+  {flag:'🇵🇹',name:'Portugal',dial:'+351'},
+  {flag:'🇬🇧',name:'United Kingdom',dial:'+44'},
+  {flag:'🇫🇷',name:'France',dial:'+33'},
+  {flag:'🇪🇸',name:'España',dial:'+34'},
+  {flag:'🇩🇪',name:'Deutschland',dial:'+49'},
+  {flag:'🇮🇹',name:'Italia',dial:'+39'},
+  {flag:'🇳🇱',name:'Nederland',dial:'+31'},
+  {flag:'🇧🇪',name:'Belgique',dial:'+32'},
+  {flag:'🇨🇭',name:'Schweiz',dial:'+41'},
+  {flag:'🇦🇹',name:'Österreich',dial:'+43'},
+  {flag:'🇺🇸',name:'United States',dial:'+1'},
+  {flag:'🇨🇦',name:'Canada',dial:'+1 CA'},
+  {flag:'🇧🇷',name:'Brasil',dial:'+55'},
+  {flag:'🇲🇦',name:'Maroc',dial:'+212'},
+];
+const DIALS_ALL=[
+  // Europa
+  {flag:'🇵🇹',name:'Portugal',dial:'+351'},
+  {flag:'🇬🇧',name:'United Kingdom',dial:'+44'},
+  {flag:'🇫🇷',name:'France',dial:'+33'},
+  {flag:'🇪🇸',name:'España',dial:'+34'},
+  {flag:'🇩🇪',name:'Deutschland',dial:'+49'},
+  {flag:'🇮🇹',name:'Italia',dial:'+39'},
+  {flag:'🇳🇱',name:'Nederland',dial:'+31'},
+  {flag:'🇧🇪',name:'Belgique',dial:'+32'},
+  {flag:'🇨🇭',name:'Schweiz / Suisse',dial:'+41'},
+  {flag:'🇦🇹',name:'Österreich',dial:'+43'},
+  {flag:'🇵🇱',name:'Polska',dial:'+48'},
+  {flag:'🇸🇪',name:'Sverige',dial:'+46'},
+  {flag:'🇳🇴',name:'Norge',dial:'+47'},
+  {flag:'🇩🇰',name:'Danmark',dial:'+45'},
+  {flag:'🇫🇮',name:'Suomi',dial:'+358'},
+  {flag:'🇮🇪',name:'Ireland',dial:'+353'},
+  {flag:'🇷🇺',name:'Россия',dial:'+7'},
+  {flag:'🇺🇦',name:'Україна',dial:'+380'},
+  {flag:'🇷🇴',name:'România',dial:'+40'},
+  {flag:'🇧🇬',name:'България',dial:'+359'},
+  {flag:'🇭🇷',name:'Hrvatska',dial:'+385'},
+  {flag:'🇬🇷',name:'Ελλάδα',dial:'+30'},
+  {flag:'🇹🇷',name:'Türkiye',dial:'+90'},
+  {flag:'🇨🇿',name:'Česko',dial:'+420'},
+  {flag:'🇸🇰',name:'Slovensko',dial:'+421'},
+  {flag:'🇭🇺',name:'Magyarország',dial:'+36'},
+  {flag:'🇸🇮',name:'Slovenija',dial:'+386'},
+  {flag:'🇧🇦',name:'Bosna i Hercegovina',dial:'+387'},
+  {flag:'🇷🇸',name:'Srbija',dial:'+381'},
+  {flag:'🇲🇪',name:'Montenegro',dial:'+382'},
+  {flag:'🇲🇰',name:'Македонија',dial:'+389'},
+  {flag:'🇦🇱',name:'Shqipëria',dial:'+355'},
+  {flag:'🇱🇹',name:'Lietuva',dial:'+370'},
+  {flag:'🇱🇻',name:'Latvija',dial:'+371'},
+  {flag:'🇪🇪',name:'Eesti',dial:'+372'},
+  {flag:'🇮🇸',name:'Ísland',dial:'+354'},
+  {flag:'🇱🇺',name:'Luxembourg',dial:'+352'},
+  {flag:'🇲🇹',name:'Malta',dial:'+356'},
+  {flag:'🇨🇾',name:'Κύπρος',dial:'+357'},
+  {flag:'🇦🇩',name:'Andorra',dial:'+376'},
+  {flag:'🇲🇨',name:'Monaco',dial:'+377'},
+  {flag:'🇸🇲',name:'San Marino',dial:'+378'},
+  {flag:'🇻🇦',name:'Vaticano',dial:'+39'},
+  {flag:'🇱🇮',name:'Liechtenstein',dial:'+423'},
+  {flag:'🇬🇮',name:'Gibraltar',dial:'+350'},
+  {flag:'🇫🇴',name:'Føroyar',dial:'+298'},
+  {flag:'🇬🇱',name:'Kalaallit Nunaat',dial:'+299'},
+  {flag:'🇦🇲',name:'Հայաստան',dial:'+374'},
+  {flag:'🇦🇿',name:'Azərbaycan',dial:'+994'},
+  {flag:'🇬🇪',name:'საქართველო',dial:'+995'},
+  {flag:'🇲🇩',name:'Moldova',dial:'+373'},
+  {flag:'🇧🇾',name:'Беларусь',dial:'+375'},
+  // América do Norte e Central
+  {flag:'🇺🇸',name:'United States',dial:'+1'},
+  {flag:'🇨🇦',name:'Canada',dial:'+1'},
+  {flag:'🇲🇽',name:'México',dial:'+52'},
+  {flag:'🇨🇷',name:'Costa Rica',dial:'+506'},
+  {flag:'🇬🇹',name:'Guatemala',dial:'+502'},
+  {flag:'🇭🇳',name:'Honduras',dial:'+504'},
+  {flag:'🇸🇻',name:'El Salvador',dial:'+503'},
+  {flag:'🇳🇮',name:'Nicaragua',dial:'+505'},
+  {flag:'🇵🇦',name:'Panamá',dial:'+507'},
+  {flag:'🇨🇺',name:'Cuba',dial:'+53'},
+  {flag:'🇩🇴',name:'República Dominicana',dial:'+1809'},
+  {flag:'🇭🇹',name:'Haïti',dial:'+509'},
+  {flag:'🇯🇲',name:'Jamaica',dial:'+1876'},
+  {flag:'🇹🇹',name:'Trinidad & Tobago',dial:'+1868'},
+  {flag:'🇧🇧',name:'Barbados',dial:'+1246'},
+  {flag:'🇧🇸',name:'Bahamas',dial:'+1242'},
+  {flag:'🇵🇷',name:'Puerto Rico',dial:'+1787'},
+  {flag:'🇦🇬',name:'Antigua & Barbuda',dial:'+1268'},
+  {flag:'🇩🇲',name:'Dominica',dial:'+1767'},
+  {flag:'🇬🇩',name:'Grenada',dial:'+1473'},
+  {flag:'🇱🇨',name:'Saint Lucia',dial:'+1758'},
+  {flag:'🇻🇨',name:'Saint Vincent',dial:'+1784'},
+  {flag:'🇰🇳',name:'Saint Kitts & Nevis',dial:'+1869'},
+  {flag:'🇧🇲',name:'Bermuda',dial:'+1441'},
+  {flag:'🇰🇾',name:'Cayman Islands',dial:'+1345'},
+  {flag:'🇹🇨',name:'Turks & Caicos',dial:'+1649'},
+  {flag:'🇻🇮',name:'US Virgin Islands',dial:'+1340'},
+  {flag:'🇻🇬',name:'British Virgin Islands',dial:'+1284'},
+  {flag:'🇦🇮',name:'Anguilla',dial:'+1264'},
+  {flag:'🇲🇸',name:'Montserrat',dial:'+1664'},
+  {flag:'🇦🇼',name:'Aruba',dial:'+297'},
+  {flag:'🇸🇽',name:'Sint Maarten',dial:'+1721'},
+  {flag:'🇧🇶',name:'Bonaire',dial:'+5997'},
+  {flag:'🇨🇼',name:'Curaçao',dial:'+5999'},
+  // América do Sul
+  {flag:'🇧🇷',name:'Brasil',dial:'+55'},
+  {flag:'🇦🇷',name:'Argentina',dial:'+54'},
+  {flag:'🇨🇴',name:'Colombia',dial:'+57'},
+  {flag:'🇨🇱',name:'Chile',dial:'+56'},
+  {flag:'🇵🇪',name:'Perú',dial:'+51'},
+  {flag:'🇻🇪',name:'Venezuela',dial:'+58'},
+  {flag:'🇪🇨',name:'Ecuador',dial:'+593'},
+  {flag:'🇧🇴',name:'Bolivia',dial:'+591'},
+  {flag:'🇵🇾',name:'Paraguay',dial:'+595'},
+  {flag:'🇺🇾',name:'Uruguay',dial:'+598'},
+  {flag:'🇬🇾',name:'Guyana',dial:'+592'},
+  {flag:'🇸🇷',name:'Suriname',dial:'+597'},
+  {flag:'🇬🇫',name:'Guyane Française',dial:'+594'},
+  // África
+  {flag:'🇲🇦',name:'Maroc',dial:'+212'},
+  {flag:'🇩🇿',name:'الجزائر',dial:'+213'},
+  {flag:'🇹🇳',name:'تونس',dial:'+216'},
+  {flag:'🇱🇾',name:'ليبيا',dial:'+218'},
+  {flag:'🇪🇬',name:'مصر',dial:'+20'},
+  {flag:'🇸🇩',name:'السودان',dial:'+249'},
+  {flag:'🇳🇬',name:'Nigeria',dial:'+234'},
+  {flag:'🇰🇪',name:'Kenya',dial:'+254'},
+  {flag:'🇹🇿',name:'Tanzania',dial:'+255'},
+  {flag:'🇺🇬',name:'Uganda',dial:'+256'},
+  {flag:'🇷🇼',name:'Rwanda',dial:'+250'},
+  {flag:'🇦🇴',name:'Angola',dial:'+244'},
+  {flag:'🇲🇿',name:'Moçambique',dial:'+258'},
+  {flag:'🇨🇻',name:'Cabo Verde',dial:'+238'},
+  {flag:'🇸🇹',name:'São Tomé e Príncipe',dial:'+239'},
+  {flag:'🇬🇼',name:'Guiné-Bissau',dial:'+245'},
+  {flag:'🇬🇳',name:'Guinée',dial:'+224'},
+  {flag:'🇬🇶',name:'Guinea Ecuatorial',dial:'+240'},
+  {flag:'🇸🇳',name:'Sénégal',dial:'+221'},
+  {flag:'🇿🇦',name:'South Africa',dial:'+27'},
+  {flag:'🇿🇲',name:'Zambia',dial:'+260'},
+  {flag:'🇿🇼',name:'Zimbabwe',dial:'+263'},
+  {flag:'🇧🇼',name:'Botswana',dial:'+267'},
+  {flag:'🇳🇦',name:'Namibia',dial:'+264'},
+  {flag:'🇸🇿',name:'Eswatini',dial:'+268'},
+  {flag:'🇱🇸',name:'Lesotho',dial:'+266'},
+  {flag:'🇲🇼',name:'Malawi',dial:'+265'},
+  {flag:'🇲🇬',name:'Madagascar',dial:'+261'},
+  {flag:'🇲🇺',name:'Mauritius',dial:'+230'},
+  {flag:'🇷🇪',name:'La Réunion',dial:'+262'},
+  {flag:'🇸🇨',name:'Seychelles',dial:'+248'},
+  {flag:'🇨🇩',name:'Congo (RDC)',dial:'+243'},
+  {flag:'🇨🇬',name:'Congo',dial:'+242'},
+  {flag:'🇨🇲',name:'Cameroun',dial:'+237'},
+  {flag:'🇬🇦',name:'Gabon',dial:'+241'},
+  {flag:'🇧🇯',name:'Bénin',dial:'+229'},
+  {flag:'🇧🇫',name:'Burkina Faso',dial:'+226'},
+  {flag:'🇨🇮',name:"Côte d'Ivoire",dial:'+225'},
+  {flag:'🇬🇭',name:'Ghana',dial:'+233'},
+  {flag:'🇸🇱',name:'Sierra Leone',dial:'+232'},
+  {flag:'🇱🇷',name:'Liberia',dial:'+231'},
+  {flag:'🇬🇲',name:'Gambia',dial:'+220'},
+  {flag:'🇲🇷',name:'Mauritanie',dial:'+222'},
+  {flag:'🇲🇱',name:'Mali',dial:'+223'},
+  {flag:'🇳🇪',name:'Niger',dial:'+227'},
+  {flag:'🇹🇩',name:'Tchad',dial:'+235'},
+  {flag:'🇨🇫',name:'Centrafrique',dial:'+236'},
+  {flag:'🇸🇸',name:'South Sudan',dial:'+211'},
+  {flag:'🇪🇹',name:'Ethiopia',dial:'+251'},
+  {flag:'🇪🇷',name:'Eritrea',dial:'+291'},
+  {flag:'🇩🇯',name:'Djibouti',dial:'+253'},
+  {flag:'🇸🇴',name:'Somalia',dial:'+252'},
+  {flag:'🇲🇼',name:'Malawi',dial:'+265'},
+  {flag:'🇧🇮',name:'Burundi',dial:'+257'},
+  // Médio Oriente
+  {flag:'🇦🇪',name:'الإمارات',dial:'+971'},
+  {flag:'🇸🇦',name:'المملكة العربية السعودية',dial:'+966'},
+  {flag:'🇮🇱',name:'ישראל',dial:'+972'},
+  {flag:'🇶🇦',name:'قطر',dial:'+974'},
+  {flag:'🇰🇼',name:'الكويت',dial:'+965'},
+  {flag:'🇧🇭',name:'البحرين',dial:'+973'},
+  {flag:'🇴🇲',name:'عُمان',dial:'+968'},
+  {flag:'🇾🇪',name:'اليمن',dial:'+967'},
+  {flag:'🇮🇶',name:'العراق',dial:'+964'},
+  {flag:'🇮🇷',name:'ایران',dial:'+98'},
+  {flag:'🇱🇧',name:'لبنان',dial:'+961'},
+  {flag:'🇸🇾',name:'سوريا',dial:'+963'},
+  {flag:'🇯🇴',name:'الأردن',dial:'+962'},
+  {flag:'🇵🇸',name:'فلسطين',dial:'+970'},
+  // Ásia Central
+  {flag:'🇰🇿',name:'Қазақстан',dial:'+7'},
+  {flag:'🇺🇿',name:'Oʻzbekiston',dial:'+998'},
+  {flag:'🇹🇲',name:'Türkmenistan',dial:'+993'},
+  {flag:'🇹🇯',name:'Тоҷикистон',dial:'+992'},
+  {flag:'🇰🇬',name:'Кыргызстан',dial:'+996'},
+  {flag:'🇦🇫',name:'افغانستان',dial:'+93'},
+  // Ásia do Sul
+  {flag:'🇮🇳',name:'India',dial:'+91'},
+  {flag:'🇵🇰',name:'Pakistan',dial:'+92'},
+  {flag:'🇧🇩',name:'Bangladesh',dial:'+880'},
+  {flag:'🇱🇰',name:'Sri Lanka',dial:'+94'},
+  {flag:'🇳🇵',name:'Nepal',dial:'+977'},
+  {flag:'🇧🇹',name:'Bhutan',dial:'+975'},
+  {flag:'🇲🇻',name:'Maldives',dial:'+960'},
+  // Ásia Oriental e Sudeste Asiático
+  {flag:'🇨🇳',name:'中国',dial:'+86'},
+  {flag:'🇯🇵',name:'日本',dial:'+81'},
+  {flag:'🇰🇷',name:'한국',dial:'+82'},
+  {flag:'🇹🇼',name:'Taiwan',dial:'+886'},
+  {flag:'🇭🇰',name:'Hong Kong',dial:'+852'},
+  {flag:'🇲🇴',name:'Macau',dial:'+853'},
+  {flag:'🇰🇵',name:'조선',dial:'+850'},
+  {flag:'🇲🇳',name:'Монгол',dial:'+976'},
+  {flag:'🇸🇬',name:'Singapore',dial:'+65'},
+  {flag:'🇲🇾',name:'Malaysia',dial:'+60'},
+  {flag:'🇹🇭',name:'Thailand',dial:'+66'},
+  {flag:'🇮🇩',name:'Indonesia',dial:'+62'},
+  {flag:'🇵🇭',name:'Philippines',dial:'+63'},
+  {flag:'🇻🇳',name:'Việt Nam',dial:'+84'},
+  {flag:'🇲🇲',name:'Myanmar',dial:'+95'},
+  {flag:'🇰🇭',name:'កម្ពុជា',dial:'+855'},
+  {flag:'🇱🇦',name:'ລາວ',dial:'+856'},
+  {flag:'🇧🇳',name:'Brunei',dial:'+673'},
+  {flag:'🇹🇱',name:'Timor-Leste',dial:'+670'},
+  // Oceânia
+  {flag:'🇦🇺',name:'Australia',dial:'+61'},
+  {flag:'🇳🇿',name:'New Zealand',dial:'+64'},
+  {flag:'🇫🇯',name:'Fiji',dial:'+679'},
+  {flag:'🇵🇬',name:'Papua New Guinea',dial:'+675'},
+  {flag:'🇸🇧',name:'Solomon Islands',dial:'+677'},
+  {flag:'🇻🇺',name:'Vanuatu',dial:'+678'},
+  {flag:'🇼🇸',name:'Samoa',dial:'+685'},
+  {flag:'🇹🇴',name:'Tonga',dial:'+676'},
+  {flag:'🇰🇮',name:'Kiribati',dial:'+686'},
+  {flag:'🇳🇷',name:'Nauru',dial:'+674'},
+  {flag:'🇵🇼',name:'Palau',dial:'+680'},
+  {flag:'🇫🇲',name:'Micronesia',dial:'+691'},
+  {flag:'🇲🇭',name:'Marshall Islands',dial:'+692'},
+  {flag:'🇳🇨',name:'Nouvelle-Calédonie',dial:'+687'},
+  {flag:'🇵🇫',name:'Polynésie Française',dial:'+689'},
+  {flag:'🇬🇺',name:'Guam',dial:'+1671'},
+  {flag:'🇨🇰',name:'Cook Islands',dial:'+682'},
+  {flag:'🇹🇻',name:'Tuvalu',dial:'+688'},
+];
+// Deduplicar por dial (manter primeiro) e ordenar por nome
+const _seen=new Set();
+const DIALS=DIALS_ALL.filter(d=>{
+  const k=d.dial+d.name;
+  if(_seen.has(k)) return false;
+  _seen.add(k);
+  return true;
+}).sort((a,b)=>a.name.localeCompare(b.name,'pt',{sensitivity:'base'}));
+
+let curDial={flag:'🇵🇹',name:'Portugal',dial:'+351'};
+
+// Países prioritários para mostrar no topo da lista (hóspedes mais frequentes)
+const DIAL_PRIORITY_CODES=['+351','+33','+44','+34','+49','+55','+212','+1','+32','+39','+31','+41'];
+
+function _makeTelOpt(d){
+  // Dial display: strip internal suffix like "+1 CA"
+  const displayDial=d.dial.split(' ')[0];
+  const div=document.createElement('div');
+  div.className='tel-opt';
+  div.innerHTML=`<span class="tel-opt-flag">${d.flag}</span><span class="tel-opt-name">${d.name}</span><span class="tel-opt-code">${displayDial}</span>`;
+  div.onclick=()=>{setDial(d);closeDrop();};
+  return div;
+}
+
+function buildDialList(list, query){
+  const ul=document.getElementById('tel-list');
+  ul.innerHTML='';
+  if(!query){
+    // Mostrar top países primeiro com separador
+    const priority=DIAL_PRIORITY_CODES
+      .map(code=>DIALS.find(d=>d.dial===code||d.dial.startsWith(code+' ')))
+      .filter(Boolean);
+    const priorityNames=new Set(priority.map(d=>d.name+d.dial));
+    const rest=list.filter(d=>!priorityNames.has(d.name+d.dial));
+    // Cabeçalho "Frequentes"
+    const hdr=document.createElement('div');
+    hdr.style.cssText='padding:6px 14px 4px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,165,61,.5);border-bottom:1px solid rgba(201,165,61,.1)';
+    hdr.textContent='★ Frequentes';
+    ul.appendChild(hdr);
+    priority.forEach(d=>ul.appendChild(_makeTelOpt(d)));
+    // Separador
+    const sep=document.createElement('div');
+    sep.style.cssText='height:1px;background:rgba(201,165,61,.12);margin:4px 0';
+    ul.appendChild(sep);
+    // Cabeçalho "Todos"
+    const hdr2=document.createElement('div');
+    hdr2.style.cssText='padding:6px 14px 4px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,165,61,.5)';
+    hdr2.textContent='Todos os países';
+    ul.appendChild(hdr2);
+    rest.forEach(d=>ul.appendChild(_makeTelOpt(d)));
+  } else {
+    if(list.length===0){
+      const empty=document.createElement('div');
+      empty.style.cssText='padding:14px;text-align:center;font-size:12px;color:#8ea3be';
+      empty.textContent='Nenhum país encontrado';
+      ul.appendChild(empty);
+    } else {
+      list.forEach(d=>ul.appendChild(_makeTelOpt(d)));
+    }
+  }
+}
+
+function setDial(d){
+  curDial=d;
+  document.getElementById('tel-flag-ico').textContent=d.flag;
+  // Show only the numeric part (strip suffix like " CA")
+  document.getElementById('tel-dial-lbl').textContent=d.dial.split(' ')[0];
+}
+
+function toggleDialDrop(){
+  const drop=document.getElementById('tel-drop');
+  if(drop.style.display==='none'){
+    drop.style.display='block';
+    buildDialList(DIALS,'');
+    document.getElementById('tel-search').value='';
+    document.getElementById('tel-search').focus();
+  }else{
+    closeDrop();
+  }
+}
+
+function closeDrop(){
+  document.getElementById('tel-drop').style.display='none';
+}
+
+function filterDials(q){
+  const s=q.toLowerCase().trim();
+  const filtered=s?DIALS.filter(d=>d.name.toLowerCase().includes(s)||d.dial.includes(s)||d.flag.includes(s)):DIALS;
+  buildDialList(filtered,s);
+}
+
+// Detetar indicativo quando o utilizador escreve +XX no campo
+function onTelInput(inp){
+  const val=inp.value;
+  if(!val.startsWith('+')) return;
+  // Ordenar por comprimento decrescente para priorizar +351 vs +35
+  const sorted=[...DIALS].sort((a,b)=>b.dial.split(' ')[0].length-a.dial.split(' ')[0].length);
+  for(const d of sorted){
+    const numDial=d.dial.split(' ')[0];
+    if(val.startsWith(numDial)){
+      if(curDial.dial!==d.dial) setDial(d);
+      return;
+    }
+  }
+}
+
+// getTelFull — devolve número completo SEM espaços / traços / parênteses para enviar ao servidor
+// Ex: +351920456456 (nunca +351 920 456 456)
+function stripPhoneFormatting(s){
+  return String(s||'').replace(/[\s\u00A0\u2007\u202F\-\.\(\)\u2010\u2011\u2012\u2013\u2014\u2015]/g,'');
+}
+function getTelFull(){
+  const inp=document.getElementById('v-tel').value.trim();
+  if(!inp) return '';
+  if(inp.startsWith('+')){
+    return stripPhoneFormatting(inp);
+  }
+  const cleaned=stripPhoneFormatting(inp).replace(/^0+/,'');
+  const numDial=curDial.dial.split(' ')[0];
+  return numDial+cleaned;
+}
+
+// Fechar dropdown ao clicar fora
+document.addEventListener('click',e=>{
+  if(!document.getElementById('tel-wrap')?.contains(e.target)) closeDrop();
+});
+
+// Inicializar picker ao carregar
+buildDialList(DIALS,'');
+
+bindThemeButtons();
+setTheme(getStoredTheme());
+applyThemeI18n(T[LANG]);
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {});
+}
+</script>
+</body>
+</html>
