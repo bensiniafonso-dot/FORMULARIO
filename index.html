@@ -95,6 +95,10 @@ body>*{position:relative;z-index:1}
 @keyframes shimmer{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
 .price-num{font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--gold)}
 .lang-footer{font-size:10.5px;color:var(--tm);letter-spacing:.04em;line-height:1.7}
+.brand-credit{font-size:9.5px;color:var(--tm);letter-spacing:.12em;text-align:center;opacity:.7;margin-top:32px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+#sl .brand-credit{margin-top:36px}
+#sf .form-scroll .brand-credit{margin-top:40px;margin-bottom:8px}
+#ss .brand-credit{margin-top:28px;margin-bottom:max(24px,env(safe-area-inset-bottom));animation:fu .5s .85s ease both;opacity:0}
 
 /* Choix thème clair / sombre (🌙 ☀️) */
 .theme-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
@@ -243,11 +247,6 @@ html[data-theme="light"] .submit-btn:hover{background:linear-gradient(135deg,#8a
 .tel-opt-code{font-size:11px;color:var(--gold);flex-shrink:0;font-weight:500}
 @media(max-width:480px){.row2{grid-template-columns:1fr}.type-grid{gap:5px}.tt-ico{font-size:18px}.tt-lbl{font-size:8.5px}.tel-drop{max-width:100%}}
 </style>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="NH Form">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 <body>
 
@@ -276,7 +275,8 @@ html[data-theme="light"] .submit-btn:hover{background:linear-gradient(135deg,#8a
     <button class="lang-btn" onclick="goLang('ES')"><span class="lang-flag">🇪🇸</span><span><span class="lang-name">Español</span><span class="lang-sub">España</span></span></button>
   </div>
   <div class="price-badge"><span>🚗</span><span id="sl-price-txt" style="font-size:11px;color:var(--tm)">Transferes a partir de</span><span class="price-num">30 €</span></div>
-  <div class="lang-footer">NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa<br>Solution Nhalabene</div>
+  <div class="lang-footer">NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa</div>
+  <div class="brand-credit">Nhalabene</div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -513,6 +513,7 @@ html[data-theme="light"] .submit-btn:hover{background:linear-gradient(135deg,#8a
         </button>
         <p class="form-note">NH Collection Lisboa Liberdade</p>
       </div>
+      <div class="brand-credit">Nhalabene</div>
     </div>
   </div>
 </div>
@@ -537,8 +538,9 @@ html[data-theme="light"] .submit-btn:hover{background:linear-gradient(135deg,#8a
       <div class="step"><div class="step-ico">📧</div><div><div class="step-name" id="s-st1n">Email de confirmação</div><div class="step-desc" id="s-st1d">Um email de confirmação será enviado</div></div></div>
 
     </div>
-    <div class="ss-footer" id="s-footer">NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa · Nhalabene</div>
+    <div class="ss-footer" id="s-footer">NH Collection Lisboa Liberdade · Avda. da Liberdade, 180 B, 1250-146 Lisboa</div>
     <button class="ss-newbtn" id="s-newbtn" onclick="resetTudo()">+ Nova Reserva</button>
+    <div class="brand-credit">Nhalabene</div>
   </div>
 </div>
 
@@ -1201,12 +1203,6 @@ buildDialList(DIALS,'');
 bindThemeButtons();
 setTheme(getStoredTheme());
 applyThemeI18n(T[LANG]);
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {});
-}
 </script>
 </body>
 </html>
